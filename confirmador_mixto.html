@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matchfin - Confirmación de Órdenes</title>
+    <!-- Fuente Inter para una estética corporativa limpia -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f4f6f5; /* Gris claro verdoso orgánico de la captura */
+            --card-bg: #ffffff; /* Blanco puro para las tarjetas */
+            --border-color: #e2e8f0; /* Borde gris suave */
+            --text-primary: #2d3748; /* Gris oscuro para textos principales */
+            --text-secondary: #718096; /* Gris medio para secundarios */
+            --primary-green: #3e8e63; /* Verde corporativo de la captura */
+            --primary-green-light: #e6f4ea; /* Verde muy claro para fondos de estado */
+            --danger-red: #d93025; /* Rojo de rechazo suave */
+            --danger-red-light: #fce8e6; /* Fondo rojo claro */
+            --accent: #2b6cb0; /* Azul corporativo */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: transparent;
+            padding: 10px;
+        }
+
+        /* Encabezado Estilo Matchfin */
+        .header-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding: 0 10px;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 24px;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .logo span {
+            color: var(--primary-green);
+        }
+
+        .title-section {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .batch-badge {
+            background-color: var(--primary-green-light);
+            color: var(--primary-green);
+            padding: 6px 14px;
+            border-radius: 99px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid rgba(62, 142, 99, 0.2);
+        }
+
+        /* Información del Lote */
+        .info-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px 24px;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .info-panel span {
+            color: var(--text-secondary);
+        }
+
+        .info-panel strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* Cabecera de columnas para las tarjetas */
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 24px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 8px;
+        }
+
+        .header-col {
+            padding: 0 5px;
+        }
+
+        /* Filas de la Tabla Estilo Tarjetas Apiladas (Onboarding de la captura) */
+        .orders-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .order-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .order-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+            border-color: rgba(62, 142, 99, 0.3);
+        }
+
+        .order-id {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 14px;
+            width: 10%;
+        }
+
+        .order-detail {
+            color: var(--text-primary);
+            font-size: 14px;
+            width: 50%;
+            font-weight: 400;
+        }
+
+        .order-amount {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 14px;
+            width: 20%;
+            text-align: right;
+            padding-right: 20px;
+        }
+
+        /* Interruptor Deslizante (Switch) Orgánico */
+        .action-container {
+            width: 20%;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .switch-label {
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .switch-input {
+            display: none;
+        }
+
+        .switch-slider {
+            width: 95px;
+            height: 34px;
+            background-color: var(--danger-red-light);
+            border: 1px solid rgba(217, 48, 37, 0.2);
+            border-radius: 20px;
+            position: relative;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--danger-red);
+        }
+
+        .switch-slider::before {
+            content: "";
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background-color: var(--danger-red);
+            left: 3px;
+            transition: transform 0.3s, background-color 0.3s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+            z-index: 2;
+        }
+
+        .switch-input:checked + .switch-slider {
+            background-color: var(--primary-green-light);
+            border-color: rgba(62, 142, 99, 0.2);
+            color: var(--primary-green);
+        }
+
+        .switch-input:checked + .switch-slider::before {
+            transform: translateX(61px);
+            background-color: var(--primary-green);
+        }
+
+        .status-text-reject {
+            margin-left: auto;
+        }
+
+        .status-text-approve {
+            display: none;
+        }
+
+        .switch-input:checked + .switch-slider .status-text-reject {
+            display: none;
+        }
+
+        .switch-input:checked + .switch-slider .status-text-approve {
+            display: block;
+        }
+
+        /* Botón de Confirmación */
+        .footer-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn-confirm {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--primary-green);
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 2px 4px rgba(62, 142, 99, 0.15);
+            width: 100%;
+            max-width: 340px;
+            text-align: center;
+        }
+
+        .btn-confirm:hover {
+            background-color: #31704e;
+        }
+
+        .btn-confirm:active {
+            transform: scale(0.99);
+        }
+
+        .disclaimer {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-align: center;
+            max-width: 480px;
+            line-height: 1.6;
+        }
+
+        /* Vista Previa para Pruebas */
+        .preview-panel {
+            margin-top: 35px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            display: none;
+        }
+
+        .preview-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--primary-green);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .preview-code {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            color: #4a5568;
+            background: #f7fafc;
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-panel" style="justify-content: center; margin-bottom: 35px;">
+        <div class="title-section" style="font-size: 24px; font-weight: 700; color: #1a1a1a;">Confirmación de Órdenes</div>
+        <div id="batch-id" style="display: none;"></div>
+    </div>
+
+    <div class="info-panel">
+        <span>Destinatario de respuesta: <strong id="operator-id">cargando...</strong></span>
+        <span>Modo de decisión: <strong>Híbrido (Selectivo)</strong></span>
+    </div>
+
+    <!-- Cabecera de columnas dinámicas -->
+    <div class="table-header" id="table-header-cols">
+        <!-- Se inyecta dinámicamente -->
+    </div>
+
+    <!-- Contenedor de filas estilo tarjetas de la captura -->
+    <div class="orders-stack" id="orders-container">
+        <!-- Se inyecta dinámicamente -->
+    </div>
+
+    <div class="footer-panel">
+        <button class="btn-confirm" onclick="procesarConfirmacion()">Confirmar y Generar Mail</button>
+        <div class="disclaimer">
+            Al confirmar se abrirá tu aplicación de correo. No requieres realizar modificaciones adicionales antes del envío.
+        </div>
+    </div>
+
+    <div class="preview-panel" id="preview-box">
+        <div class="preview-title">Vista Previa de Respuesta que será enviada</div>
+        <div class="preview-code" id="preview-content"></div>
+    </div>
+
+    <div class="preview-panel" id="json-preview-box" style="margin-top: 25px; border-color: var(--accent);">
+        <div class="preview-title" style="color: var(--accent);">JSON de Respuesta para Sistemas Matchfin (API/Pantallas)</div>
+        <div class="preview-code" id="json-preview-content" style="color: var(--accent);"></div>
+    </div>
+</div>
+
+<script>
+    // Parámetros por defecto para simular la demo
+    const defaultData = "L-9083|101:Pampa Energia S.A.:USD 15,200|102:Enzo Julio Asencio:USD 18,100|103:Distribución Coronado SAU:USD 3,400|104:Comunicación Piciogo SRL:USD 1,800";
+    const defaultEmail = "operaciones@matchfin.com"; // Se auto-envía por defecto para la demo
+
+    // Obtener parámetros de la URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const rawData = urlParams.get('data') || defaultData;
+    const rawJson = urlParams.get('data_json'); // JSON en Base64
+    const userEmail = urlParams.get('email') || defaultEmail;
+
+    document.getElementById('operator-id').innerText = userEmail;
+
+    let batchId = "";
+    let cols = ["ID Orden", "Detalle de Transacción", "Importe"];
+    let rows = [];
+
+    // Lógica de carga
+    if (rawJson) {
+        try {
+            // Decodificar Base64 y parsear JSON
+            const decodedJson = JSON.parse(atob(rawJson));
+            batchId = decodedJson.batch;
+            cols = decodedJson.cols;
+            rows = decodedJson.rows; // Array de arrays, ej: [ ["101", "Compra", "YPFD", "ARS 37.5M"], ... ]
+        } catch (e) {
+            console.error("Error al decodificar JSON Base64:", e);
+            cargarDefault();
+        }
+    } else {
+        cargarDefault();
+    }
+
+    function cargarDefault() {
+        batchId = "F-9034";
+        cols = ["ID Orden", "Operacion", "Especie", "Cliente", "Moneda", "Ambito", "Cant. VN", "Precio", "P.liq", "Monto"];
+        rows = [
+            ["1001", "Compra", "YPFD", "100002 - ZA Asesores SA", "ARS", "PISO", "5.000", "7.500,000", "CI", "37.500.000,000"],
+            ["1002", "Venta", "GGAL", "100002 - ZA Asesores SA", "ARS", "PISO", "2.500", "4.200,000", "CI", "10.500.000,000"],
+            ["1003", "Compra", "PAMP", "100002 - ZA Asesores SA", "USD", "SENEBI", "1.500", "12,500", "48hs", "18.750,000"]
+        ];
+    }
+
+    document.getElementById('batch-id').innerText = `Lote: ${batchId}`;
+
+    // Renderizar cabeceras dinámicas en div de bloque
+    const headerDiv = document.getElementById('table-header-cols');
+    if (headerDiv) {
+        headerDiv.innerHTML = "";
+        cols.forEach((col, idx) => {
+            const div = document.createElement('div');
+            div.innerText = col;
+            div.className = 'header-col';
+            
+            // Establecer anchos equilibrados para imitar la visualización de tarjetas
+            if (idx === 0) {
+                div.style.width = "10%";
+            } else if (idx === cols.length - 1) {
+                div.style.width = "20%";
+                div.style.textAlign = "right";
+                div.style.paddingRight = "20px";
+            } else {
+                div.style.width = `${50 / (cols.length - 2)}%`;
+            }
+            headerDiv.appendChild(div);
+        });
+        
+        // Espacio para la columna del Switch
+        const divDecision = document.createElement('div');
+        divDecision.innerText = "Decisión";
+        divDecision.className = 'header-col';
+        divDecision.style.width = "20%";
+        divDecision.style.textAlign = "right";
+        headerDiv.appendChild(divDecision);
+    }
+
+    const container = document.getElementById('orders-container');
+    container.innerHTML = "";
+
+    // Cargar las órdenes imitando las celdas
+    rows.forEach(row => {
+        const id = row[0]; // Asumimos que el primer elemento es el ID de la orden
+        
+        // Creamos la tarjeta/fila
+        const card = document.createElement('div');
+        card.className = 'order-card';
+        
+        // Construimos las columnas dinámicas para la visualización del listado
+        let colsHtml = "";
+        for(let idx = 0; idx < cols.length; idx++) {
+            const value = row[idx];
+            
+            if (idx === 0) {
+                colsHtml += `<div class="order-id">#${value}</div>`;
+            } else if (idx === cols.length - 1) {
+                colsHtml += `<div class="order-amount">${value}</div>`;
+            } else {
+                // Columnas intermedias
+                colsHtml += `<div style="font-size: 13px; width: ${50 / (cols.length - 2)}%; color: var(--text-primary); text-align: left; padding: 0 5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${value}</div>`;
+            }
+        }
+
+        card.innerHTML = `
+            ${colsHtml}
+            <div class="action-container">
+                <label class="switch-label">
+                    <input type="checkbox" class="switch-input" id="check-${id}" checked>
+                    <div class="switch-slider">
+                        <span class="status-text-approve">APROBAR</span>
+                        <span class="status-text-reject">RECHAZAR</span>
+                    </div>
+                </label>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    // Procesa la confirmación híbrida
+    function procesarConfirmacion() {
+        const aprobadas = [];
+        const rechazadas = [];
+
+        rows.forEach(row => {
+            const id = row[0];
+            const isChecked = document.getElementById(`check-${id}`).checked;
+            
+            // Construir el formato de ticket alineado para esta orden
+            const estado = isChecked ? "APROBADA" : "RECHAZADA";
+            let ticketString = `=========================================\n`;
+            ticketString += `Oferta #${id} [${estado}]\n`;
+            ticketString += `=========================================\n`;
+            
+            for(let idx = 1; idx < cols.length; idx++) {
+                const label = cols[idx];
+                const value = row[idx];
+                // Alinear las etiquetas con espacios para dar formato de columna (ancho 14)
+                const labelPadded = label.padEnd(14, ' ');
+                ticketString += `${labelPadded}: ${value}\n`;
+            }
+            ticketString += `-----------------------------------------\n\n`;
+
+            if(isChecked) {
+                aprobadas.push(ticketString);
+            } else {
+                rechazadas.push(ticketString);
+            }
+        });
+
+        const subject = `Respuesta Lote de Órdenes ${batchId}`;
+        
+        let body = `Confirmación de lote de órdenes [${batchId}]\n`;
+        body += `=========================================\n\n`;
+        
+        body += `APROBADAS (${aprobadas.length}):\n\n`;
+        if(aprobadas.length > 0) {
+            aprobadas.forEach(ticket => {
+                body += ticket;
+            });
+        } else {
+            body += `(Ninguna)\n\n`;
+        }
+        
+        body += `RECHAZADAS (${rechazadas.length}):\n\n`;
+        if(rechazadas.length > 0) {
+            rechazadas.forEach(ticket => {
+                body += ticket;
+            });
+        } else {
+            body += `(Ninguna)\n\n`;
+        }
+
+        body += `Este email fue generado y enviado de forma automática por FACIMEX VALORES S.A.`;
+        
+        // Bloque de control en formato JSON para lectura automática del backend (Mail Parser / API)
+        const jsonControl = {
+            batch: batchId,
+            aprobadas: rows.filter(r => document.getElementById(`check-${r[0]}`).checked).map(r => r[0]),
+            rechazadas: rows.filter(r => !document.getElementById(`check-${r[0]}`).checked).map(r => r[0])
+        };
+
+        // Mostrar el JSON en pantalla en la landing para la integración con Matchfin
+        const jsonBox = document.getElementById('json-preview-box');
+        const jsonContent = document.getElementById('json-preview-content');
+        if (jsonBox && jsonContent) {
+            jsonContent.innerText = JSON.stringify(jsonControl, null, 4);
+            jsonBox.style.display = 'block';
+        }
+        
+        // Simular envío API al Servidor de Matchfin para actualizar pantallas en segundo plano
+        console.log("Enviando JSON a API Matchfin:", jsonControl);
+
+        // El destinatario para auto-envío y demo toma dinámicamente el email del cliente
+        const to = userEmail || "ordenes@auto-dev.matchfin.ar"; 
+        const domain = userEmail.split('@')[1] ? userEmail.split('@')[1].toLowerCase() : "";
+        let finalUrl = "";
+
+        if (domain === "gmail.com" || domain === "googlemail.com") {
+            finalUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        } else if (domain === "outlook.com" || domain === "hotmail.com" || domain === "live.com") {
+            finalUrl = `https://outlook.live.com/default.aspx?rru=compose&to=${encodeURIComponent(to)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        } else {
+            finalUrl = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        }
+
+        // Mostrar Vista Previa en Pantalla
+        const previewBox = document.getElementById('preview-box');
+        const previewContent = document.getElementById('preview-content');
+        
+        let targetText = "";
+        if (domain === "gmail.com" || domain === "googlemail.com") {
+            targetText = "Abriendo en Gmail Web (Pestaña nueva)";
+        } else if (domain === "outlook.com" || domain === "hotmail.com" || domain === "live.com") {
+            targetText = "Abriendo en Outlook Web (Pestaña nueva)";
+        } else {
+            targetText = "Ejecutando mailto tradicional (Outlook de Escritorio / App nativa)";
+        }
+
+        previewContent.innerText = `Acción: ${targetText}\n\nPara: ${to}\nAsunto: ${subject}\n\n${body}`;
+        previewBox.style.display = 'block';
+
+        // Redirección
+        setTimeout(() => {
+            if (domain === "gmail.com" || domain === "googlemail.com" || domain === "outlook.com" || domain === "hotmail.com" || domain === "live.com") {
+                window.open(finalUrl, '_blank');
+            } else {
+                window.location.href = finalUrl;
+            }
+        }, 800); // Pequeño delay de transición
+    }
+</script>
+
+</body>
+</html>
